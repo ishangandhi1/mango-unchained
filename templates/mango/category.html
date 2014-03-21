@@ -16,9 +16,11 @@
 			</ul>
 			{% else %}
 			<strong>No pages in the current category</strong>
+
 			{% endif %}
+		<a href="/mango/category/{{ category_name_url }}/add_page">Add a new page</a>
 		{% else %}
-		<strong>The ategory {{ category_name }} does not exist</strong>
+		<strong>The category {{ category_name }} does not exist</strong>
 		{% endif %}
 
 	</body>

@@ -1,11 +1,13 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from mango.models import Category, Page
+from mango.forms import CategoryForm, PageForm
+
 
 def encdec(categ,scheme):
 	if scheme == 'encode':
-		return categ.replace(' ',' ')
+		return categ.replace(' ','_')
 
 	else:
 		return categ.replace('_',' ')
@@ -34,10 +36,50 @@ def category(request,category_name_url):
 		pages = Page.objects.filter(category=category)
 		context_dict['pages'] = pages
 		context_dict['category'] = category
+		context_dict['category_name_url'] = category_name_url
 	except Category.DoesNotExist:
-		pass
+		raise Http404
 
 	return render_to_response('mango/category.html',context_dict,context)
+
+
+def add_category(request):
+	context = RequestContext(request)
+	if request.method == 'POST':
+		form = CategoryForm(request.POST)
+		if form.is_valid():
+			form.save(commit=True)
+			return index(request)
+		else:
+			print form.errors
+	else:
+		form = CategoryForm()
+
+	return render_to_response('mango/add_category.html', {'form':form},context)
+
+def add_page(request, category_name_url):
+	context = RequestContext(request)
+	category_name = encdec(category_name_url,'decode')
+	if request.method == 'POST':
+		form = PageForm(request.POST)
+		if form.is_valid():
+			page = form.save(commit=False)
+			try:
+				cat = Category.objects.get(category_name)
+				page.category = cat
+			except Category.DoesNotExist:
+				return render_to_response('/mango/add_category.html',{},context)
+
+			page.views = 0
+			page.save()
+
+			return category(request, category_name_url)
+		else:
+			print form.errors
+	else:
+		form = PageForm()
+
+	return render_to_response('mango/add_page.html',{'category_name_url':category_name_url, 'category_name':category_name, 'form':form}, context)
 
 
 
