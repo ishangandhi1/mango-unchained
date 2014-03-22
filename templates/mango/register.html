@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mango</title>
+</head>
+<body>
+	<h1>Register with Mango</h1>
+	{% if registered %}
+	Mangos says: <strong>thank you for registering</strong>
+	<a href="/mango/">Return to homepage</a>
+	{% else %}
+	Mango says: <strong>Register here</strong>
+	<form id="user_form" method="post" action="/mango/register/" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{ user_form.as_p }}
+		{{ profile_form.as_p }}
+		<input type="submit" name="sumbit" value="Register here">
+	</form>
+	{% endif %}
+</body>
+</html>

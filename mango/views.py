@@ -1,8 +1,10 @@
-from django.http import HttpResponse, Http404
+from django.http import HttpResponseRedirect ,HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from mango.models import Category, Page
-from mango.forms import CategoryForm, PageForm
+from mango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 
 
 def encdec(categ,scheme):
@@ -80,6 +82,62 @@ def add_page(request, category_name_url):
 		form = PageForm()
 
 	return render_to_response('mango/add_page.html',{'category_name_url':category_name_url, 'category_name':category_name, 'form':form}, context)
+
+def register(request):
+	context = RequestContext(request)
+	registered = False
+	if request.method == 'POST':
+		user_form = UserForm(data=request.POST)
+		profile_form = UserProfileForm(data=request.POST)
+		if user_form.is_valid() and profile_form.is_valid():
+			user = user_form.save()
+			user.set_password(user.password)
+			user.save()
+			profile = profile_form.save(commit=False)
+			profile.user = user
+			if 'picture' in request.FILES:
+				profile.picture = request.FILES['picture']
+			profile.save()
+			registered = True
+
+		else:
+			print user_form.errors, profile_form.errors
+
+	else:
+		user_form = UserForm()
+		profile_form = UserProfileForm()
+
+	return render_to_response('mango/register.html',{'user_form':user_form, 'profile_form':profile_form, 'registered':registered}, context)
+
+
+def user_login(request):
+	context = RequestContext(request)
+	if request.method == 'POST':
+		username = request.POST['username']
+		password = request.POST['password']
+		user = authenticate(username=username, password=password)
+		if user is not None:
+			if user.is_active:
+				login(request,user)
+				return HttpResponseRedirect('/mango/')
+			else:
+				return HttpResponse("Your mango account is disabled")
+
+		else:
+			print "Invalid login details: {0},{1}".format(username,password)
+			return HttpResponse("Invalid login details supplied")
+	else:
+		return render_to_response('mango/login.html',{},context)
+
+@login_required
+def restricted(request):
+	return HttpResponse("Since you're not logged in you cannot see this text")
+
+@login_required
+def user_logout(request):
+	logout(request)
+	return HttpResponseRedirect('/mango/')
+
 
 
 
