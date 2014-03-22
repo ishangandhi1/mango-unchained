@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mango - {% block title %}Your online resource guide{% endblock %}</title>
+</head>
+<body>
+<div>
+	{% block body_block %}{% endblock %}
+</div>
+<hr/>
+<div>
+	<ul>
+		{% if user.is_authenticated %}
+		<li><a href="/mango/restricted/">Restricted Page</a></li>
+		<li><a href="/mango/add_category/">Add Category</a></li>
+		<li><a href="/mango/logout/">Logout</a></li>
+		{% else %}
+		<li><a href="/mango/register/">Register Here</a></li>
+		<li><a href="/mango/login/">Login</a></li>
+		{% endif %}
+		<li><a href="/mango/about">About</a></li>
+	</ul>
+</div>
+	
+</body>
+</html>
