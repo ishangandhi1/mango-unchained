@@ -1,17 +1,36 @@
 {% extends 'mango/base.html' %}
 {% block title %} Register {% endblock %}
 {% block body_block %}
-	<h1>Register with Mango</h1>
+<div class="hero-unit">
+	<h1>Register with Mango</h1><br/>
+	<div class="container">
 	{% if registered %}
-	Mangos says: <strong>thank you for registering</strong>
+	Mangos says: <p class="text-success"><strong>thank you for registering</strong></p>
 	<a href="/mango/">Return to homepage</a>
 	{% else %}
-	Mango says: <strong>Register here</strong>
-	<form id="user_form" method="post" action="/mango/register/" enctype="multipart/form-data">
+	
+	<form class="form-signin span8" id="user_form" method="post" action="/mango/register/" enctype="multipart/form-data">
+	<h2 class="form-signin-heading">Register here</h2>
 		{% csrf_token %}
-		{{ user_form.as_p }}
-		{{ profile_form.as_p }}
-		<input type="submit" name="sumbit" value="Register here">
+		{% for field in user_form.visible_fields %}
+            <p class="text-error">{{ field.errors }}</p>
+            {{ field.help_text }}<br />
+            {{ field }}<br />
+            {% endfor %}
+
+            {% for field in profile_form.visible_fields %}
+            <p class="text-error">{{ field.errors }}</p>
+            {{ field.help_text }}<br />
+            {{ field }}<br />
+            {% endfor %}
+
+            <br />
+            <!-- Provide a button to click to submit the form. -->
+            <input class="btn btn-primary" type="submit" name="submit" value="Register"/>
+
+		
 	</form>
 	{% endif %}
+	</div>
+</div>
 {% endblock %}

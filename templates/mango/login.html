@@ -1,13 +1,25 @@
 {% extends 'mango/base.html' %}
 {% block title %} Login {% endblock %}
 {% block body_block %}
+<div class="hero-unit">
 		<h1>Login to Mango</h1>
-		<form id="login_form" method="post" action="/mango/login/">
+		<div class="container">
+		<form class="form-signin span4" id="login_form" method="post" action="/mango/login/">
+		<h2 class="form-signin-heading">Please sign in</h2>
 			{% csrf_token %}
-			Username: <input type="text" name="username" value="" size="50"/>
+            {% if bad_details %}
+            <p class="text-error"><strong>your username and/or password were incorrect</strong></p>
+            {% elif disabled_account %}
+            <p class="text-warning"><strong>Your mango account is currently disabled! We cannot log you in</strong></p>
+            {% endif %}
+
+			Username: <input type="text" class="input-block-level" placeholder="Username"  name="username" value="" size="50"/>
 			<br/>
-			Password: <input type="password" name="password" value="" size="50"/>
-			<input type="submit" value="submit"/>
+			Password: <input type="password" class="input-block-level" placeholder="password" name="password" value="" size="50"/>
+			<button class="btn btn-primary">Sign in</button>
 		</form>
+		</div>
+		<!-- container -->
+</div>
 {% endblock %}
 	

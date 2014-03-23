@@ -7,6 +7,10 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 
+
+category_list = Category.objects.order_by('-likes')[:5]
+page_list = Page.objects.order_by('-views')[:5]
+
 def encdec(categ,scheme):
 	if scheme == 'encode':
 		return categ.replace(' ','_')
@@ -18,8 +22,8 @@ def encdec(categ,scheme):
 def index(request):
 	#return HttpResponse("Mango says hello world! <a href='/mango/about'>About</a>")
 	context = RequestContext(request)
-	category_list = Category.objects.order_by('-likes')[:5]
-	page_list = Page.objects.order_by('-views')[:5]
+	"""category_list = Category.objects.order_by('-likes')[:5]
+	page_list = Page.objects.order_by('-views')[:5]"""
 	context_dict = {'categories': category_list,'pages': page_list}
 	for category in category_list:
 		category.url = encdec(category.name,'encode')
@@ -117,6 +121,9 @@ def register(request):
 				profile.picture = request.FILES['picture']
 			profile.save()
 			registered = True
+			user.backend = 'django.contrib.auth.backends.ModelBackend'
+			login(request, user)
+			return render_to_response('mango/index.html',{'registered':registered, 'categories': category_list,'pages': page_list}, context)
 
 		else:
 			print user_form.errors, profile_form.errors
@@ -130,6 +137,7 @@ def register(request):
 
 def user_login(request):
 	context = RequestContext(request)
+	context_dict ={}
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
@@ -139,11 +147,14 @@ def user_login(request):
 				login(request,user)
 				return HttpResponseRedirect('/mango/')
 			else:
+				context_dict['disabled_account'] = True
 				return HttpResponse("Your mango account is disabled")
 
 		else:
 			print "Invalid login details: {0},{1}".format(username,password)
-			return HttpResponse("Invalid login details supplied")
+			context_dict['bad_details'] = True
+			return render_to_response('mango/login.html',context_dict,context)
+			#return HttpResponse("Invalid login details supplied")
 	else:
 		return render_to_response('mango/login.html',{},context)
 
