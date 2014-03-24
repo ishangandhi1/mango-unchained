@@ -6,6 +6,7 @@ from mango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
+from mango.bing_search import run_query
 
 
 category_list = Category.objects.order_by('-likes')[:5]
@@ -166,6 +167,16 @@ def restricted(request):
 def user_logout(request):
 	logout(request)
 	return HttpResponseRedirect('/mango/')
+
+def search(request):
+	context = RequestContext(request)
+	result_list = []
+	if request.method == 'POST':
+		query = request.POST['query'].strip()
+		if query:
+			result_list = run_query(query)
+
+	return render_to_response('mango/search.html',{'result_list':result_list},context)
 
 
 
