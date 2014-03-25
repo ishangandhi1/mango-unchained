@@ -1,0 +1,11 @@
+
+		{% if cat_list %}
+		<h3>Categories on mango</h3>
+			<ul>
+				{% for category in cat_list %}
+				<li><a href="/mango/category/{{ category.url }}">{{ category.name }}</a></li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<strong>There are no categories present</strong>
+		{% endif %}

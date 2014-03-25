@@ -8,8 +8,10 @@
 	<div class="container-fluid">
 	<form class="form-signin span8" id="user_form" method="post" action="/mango/search/">
 	{% csrf_token %}
-	<input type="text" size="50" name="query" value="" id="query"/>
-	<input type="submit" class="btn btn-primary" name="submit" value="Search" />
+	<input type="text" size="50" name="query" value="" id="query"/><br/>
+
+	<input type="submit" class="btn btn-primary" name="App_Search" value="App_Search" />
+	<input type="submit" class="btn btn-success" name="Web_Search" value="Web_Search" />
 		
 	</form>
 	{% if result_list %}
