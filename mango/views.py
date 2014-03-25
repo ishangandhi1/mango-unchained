@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect ,HttpResponse, Http404
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from mango.models import Category, Page
 from mango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 from django.contrib.auth import login, authenticate, logout
@@ -48,8 +48,8 @@ def encdec(categ,scheme):
 def index(request):
 	#return HttpResponse("Mango says hello world! <a href='/mango/about'>About</a>")
 	context = RequestContext(request)
-	"""category_list = Category.objects.order_by('-likes')[:5]
-	page_list = Page.objects.order_by('-views')[:5]"""
+	category_list = Category.objects.order_by('-likes')[:5]
+	page_list = Page.objects.order_by('-views')[:5]
 	context_dict = {'categories': category_list,'pages': page_list,'cat_list':cat_list}
 	for category in category_list:
 		category.url = encdec(category.name,'encode')
@@ -84,7 +84,7 @@ def category(request,category_name_url):
 	context_dict = {'category_name': category_name}
 	try:
 		category = Category.objects.get(name=category_name)
-		pages = Page.objects.filter(category=category)
+		pages = Page.objects.filter(category=category).order_by('-views')
 		context_dict['pages'] = pages
 		context_dict['category'] = category
 		context_dict['category_name_url'] = category_name_url
@@ -208,6 +208,23 @@ def search(request):
 				result_list = run_query(query)
 
 	return render_to_response('mango/search.html',{'result_list':result_list, 'cat_list':cat_list },context)
+
+def track_url(request):
+	context = RequestContext(request)
+	page_id = None
+	url = '/mango/'
+	if request.method == 'GET':
+		if 'page_id' in request.GET:
+			page_id = request.GET['page_id']
+			try:
+				page = Page.objects.get(id=page_id)
+				page.views = page.views+1
+				page.save()
+				url = page.url
+			except:
+				pass
+
+	return redirect(url)
 
 
 
