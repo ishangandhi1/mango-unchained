@@ -1,12 +1,17 @@
 # Django settings for my_django_project project.
 import os
+import dj_databse_url
+
+
+DATABASES['default'] = dj_databse_url.config()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SETTINGS_DIR = os.path.dirname(__file__)
 PROJECT_PATH = os.path.join(SETTINGS_DIR, os.pardir)
 PROJECT_PATH = os.path.abspath(PROJECT_PATH)
 TEMPLATE_PATH = os.path.join(PROJECT_PATH, 'templates')
 #print TEMPLATE_PATH, PROJECT_PATH
-DATABASE_PATH = os.path.join(PROJECT_PATH, 'mango.db')
+APP_PATH = os.path.join(PROJECT_PATH, 'mango')
 
 ECHONEST_API = '68NJWFXIG7UDXOTC2'
 DEBUG = True
@@ -72,7 +77,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = 'staticfiles'
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -83,6 +88,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.foin(APP_PATH, 'static')
 )
 
 # List of finder classes that know how to find static files in
