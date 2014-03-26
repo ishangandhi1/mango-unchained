@@ -9,6 +9,7 @@ from datetime import datetime
 from mango.bing_search import run_query
 import re
 from django.db.models import Q
+from mango.music_search import music_query
 
 
 category_list = Category.objects.order_by('-likes')[:5]
@@ -225,6 +226,17 @@ def track_url(request):
 				pass
 
 	return redirect(url)
+
+def song_search(request):
+	context = RequestContext(request)
+	result_list = []
+	if request.method == 'POST':
+		mquery = request.POST['mquery'].strip()
+		if mquery:
+			result_list = music_query(mquery)
+
+	return render_to_response('mango/music_search.html',{'result_list':result_list},context)
+
 
 
 
